@@ -18,7 +18,7 @@ class ViewController: UIViewController {
     var currentValue = 50
     var targetValue = 0
     var score = 0
-    var round = 1
+    var round = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -29,20 +29,28 @@ class ViewController: UIViewController {
     
     @IBAction func showAlert(){
         let difference = abs(targetValue - currentValue)
-        let points = 100 - difference
+        var points = 100 - difference
+        if points == 100 {
+            points += 100
+        }
+        if points == 99 {
+            points += 50
+        }
         score += points
         
         let message = "You scored \(points) points"
         
-        let alert = UIAlertController(title: "Hello, world!", message: message, preferredStyle: .alert)
+        let alert = UIAlertController(title: feedBack(difference), message: message, preferredStyle: .alert)
         
-        let action = UIAlertAction(title: "OK", style: .cancel, handler: nil)
+        let action = UIAlertAction(title: "OK", style: .cancel, handler: {
+            _ in self.startNewRound()
+        })
         
         alert.addAction(action)
         
         present(alert, animated: true, completion: nil)
         
-        startNewRound()
+        
         
     }
     
@@ -51,12 +59,13 @@ class ViewController: UIViewController {
     }
     
     func startNewRound(){
+        round += 1
         targetValue = Int.random(in: 1...100)
         currentValue = 50
         slider.value = Float(currentValue)
         
         updateLabels()
-        round += 1
+        
         
     }
     
@@ -67,7 +76,25 @@ class ViewController: UIViewController {
         
     }
     
+    func feedBack(_ difference: Int) -> String {
+        if difference == 0 {
+            return "Perfect!"
+        } else if (difference < 10){
+            return "You almost had it!"
+        } else {
+            return "Dude, you aint close!"
+        }
+    }
     
+    @IBAction func startOver(){
+        targetValue = Int.random(in: 1...100)
+        currentValue = 50
+        score = 0
+        slider.value = Float(currentValue)
+        round = 1
+        updateLabels()
+        
+    }
     
 }
 
